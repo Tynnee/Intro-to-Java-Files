@@ -1,0 +1,260 @@
+import java.util.Scanner;
+import java.io.PrintStream;
+import java.io.File;
+import java.io.IOException;
+import java.util.Hashtable;
+
+public class Assembler2 {
+
+ public static void main(String[] args) throws IOException {
+  // take the input file name as a command line argument
+  String filename = args[0];
+  
+  // For d1 - d3
+  Hashtable<String, String> destTable;
+  destTable = new Hashtable<String, String>();
+  destTable.put("0",   "000");
+  destTable.put("M",  "001");
+  destTable.put("MD", "011");
+  destTable.put("D", "010");
+  destTable.put("A", "100");
+  destTable.put("AM", "101");
+  destTable.put("AD", "110");
+  destTable.put("AMD", "111");
+  
+  
+  //For a and c1 - c6
+  Hashtable<String, String> crestTable;
+  crestTable = new Hashtable<String, String>();
+  crestTable.put("0", "0101010");
+  crestTable.put("1", "0111111");
+  crestTable.put("-1", "0111010");
+  crestTable.put("D", "0001100");
+  crestTable.put("A", "0110000");
+  crestTable.put("!D", "0001101");
+  crestTable.put("!A", "0110001");
+  crestTable.put("-D", "0001111");
+  crestTable.put("-A", "0110011");
+  crestTable.put("D+1", "0011111");
+  crestTable.put("A+1", "0110111");
+  crestTable.put("D-1", "0001110");
+  crestTable.put("A-1", "0110010");
+  crestTable.put("D+A", "0000010");
+  crestTable.put("D-A", "0010011");
+  crestTable.put("A-D", "0000111");
+  crestTable.put("D&A", "0000000");
+  crestTable.put("D|A", "0010101");
+  crestTable.put("M", "1110000");
+  crestTable.put("!M", "1110001");
+  crestTable.put("-M", "1110011");
+  crestTable.put("M+1", "1110111");
+  crestTable.put("M-1", "1110010");
+  crestTable.put("D+M", "1000010");
+  crestTable.put("D-M", "1010011");
+  crestTable.put("M-D", "1000111");
+  crestTable.put("D&M", "1000000");
+  crestTable.put("D|M", "1010101");
+  
+  //for j1 - j3
+  Hashtable<String, String> bestTable;
+  bestTable = new Hashtable<String, String>();
+  bestTable.put("null", "000");
+  bestTable.put("JGT", "001");
+  bestTable.put("JEQ", "010");
+  bestTable.put("JGE", "011");
+  bestTable.put("JLT", "100");
+  bestTable.put("JNE", "101");
+  bestTable.put("JLE", "110");
+  bestTable.put("JMP", "111");
+  
+  Hashtable<String, String> zestTable;
+  zestTable = new Hashtable<String, String>();
+   zestTable.put("R0", "0000000000000000");
+   zestTable.put("R1", "0000000000000001");
+   zestTable.put("R2", "0000000000000010");
+   zestTable.put("R3", "0000000000000011");
+   zestTable.put("R4", "0000000000000100");
+   zestTable.put("R5", "0000000000000101");
+   zestTable.put("R6", "0000000000000110");
+   zestTable.put("R7", "0000000000000111");
+   zestTable.put("R8", "0000000000001000");
+   zestTable.put("R9", "0000000000001001");
+   zestTable.put("R10", "0000000000001010");
+   zestTable.put("R11", "0000000000001011");
+   zestTable.put("R12", "0000000000001100");
+   zestTable.put("R13", "0000000000001101");
+   zestTable.put("R14", "0000000000001110");
+   zestTable.put("R15", "0000000000001111");
+            
+   zestTable.put("SCREEN", "0100000000000000");              
+   zestTable.put("KBD", "0110000000000000");
+   zestTable.put("SP", "0000000000000000");
+   zestTable.put("LCL", "0000000000000001");
+   zestTable.put("ARG", "0000000000000010");
+   zestTable.put("THIS", "0000000000000011");
+   zestTable.put("THAT", "0000000000000100");
+  
+  // Scanner is handy for parsing input <http://docs.oracle.com/javase/7/docs/api/java/util/Scanner.html>
+  Scanner in = new Scanner(new File(filename));
+  
+  // the String class is your friend <http://docs.oracle.com/javase/7/docs/api/java/lang/String.html>
+  // here we use substring to trim off the ".asm" extension
+  String outPrefix = filename.substring(0, filename.length()-4);
+  
+  // PrintStream is used for output -- supports print and printf
+  PrintStream out = new PrintStream(new File(outPrefix + ".hack"));
+  
+  //counter for label location
+  int i =0;
+  int j = 0;
+  
+  // read an input file line by line and write it to an output file
+  while (in.hasNextLine()) {
+  
+   String line = in.nextLine();
+   // remove all whitespace -- regular expressions are cool <http://docs.oracle.com/javase/7/docs/api/java/util/regex/Pattern.html#sum>
+   line = line.replaceAll("\\s", "");
+   String cment="//";
+   if(line.contains(cment)){
+   String[] comments =line.split("//");
+   line=comments[0];
+   }
+   
+   int length = line.length();
+   if (length>0){
+   i++;
+    String instruct = line.substring(0,1);
+    String par = "(";
+    int compare=instruct.compareToIgnoreCase(par); //compares first char to make sure its a label
+    String stringLength=line.substring(1, length-1);
+    if(compare==0){
+    i--;
+    
+    if(zestTable.containsKey(stringLength)){ 
+     //do nothing if already in table
+    }
+    else{
+    int binbin = i;
+    String binReal=Integer.toBinaryString(binbin);
+    zestTable.put(stringLength, make16(binReal));  //puts into table if not already there
+    }
+  }
+ } else{
+ 
+ 
+ }
+ 
+ }
+  
+  
+  
+  
+  
+  
+  Scanner in2 = new Scanner(new File(filename));
+  // read an input file line by line and write it to an output file
+  while (in2.hasNextLine()) {
+   String line = in2.nextLine();
+   line = line.replaceAll("\\s", "");
+   String cment="//";
+   if(line.contains(cment)){
+   String[] comments =line.split("//");
+   line=comments[0];
+   }
+
+   int length = line.length();
+   if (length>0){
+    
+    String instruct = line.substring(0,1);
+    
+    String at = "@";
+    
+    int compare=instruct.compareToIgnoreCase(at);
+    String stringLength=line.substring(1, length);
+    if(compare==0){
+    
+    if(zestTable.containsKey(stringLength)){
+    System.out.println(zestTable.get(stringLength)); 
+    out.println(zestTable.get(stringLength));
+    }
+    else{
+    
+    
+   
+    
+    
+    
+    int binbin = Integer.parseInt(stringLength);
+    String binReal=Integer.toBinaryString(binbin);
+    
+    System.out.println(make16(binReal));
+    out.println(make16(binReal));
+    
+    }
+    
+    
+    }
+    else{
+    if(line.contains("=")){
+    String[] splitsies =line.split("=");
+    
+    String juan = destTable.get(splitsies[0]);
+    String atu = crestTable.get(splitsies[1]);
+    
+    
+    System.out.println("111" + atu + juan + "000");
+    out.println("111" + atu + juan + "000");
+    }
+    if(line.contains(";")){
+    String[] splitsies2 =line.split(";");
+    
+    String juan2 = crestTable.get(splitsies2[0]);
+    String atu2 = bestTable.get(splitsies2[1]);
+    
+    System.out.println("111" + juan2 + "000" + atu2);
+    out.println("111" + juan2 + "000" + atu2);
+    }
+    
+    
+    
+    }
+    }
+  
+    
+  
+   
+   
+   
+  }
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  in.close();
+  out.close();
+ }
+ 
+ 
+ public static String make16(String alpha){
+ 
+ int lenny=alpha.length();
+ String bravo="0";
+ String charlie="";
+ for(int i=0; i< 16-lenny; i++){
+ charlie=charlie+bravo;
+ 
+ }
+ charlie=charlie+alpha;
+ 
+ return charlie;
+ 
+ }
+ 
+ 
+ 
+}
